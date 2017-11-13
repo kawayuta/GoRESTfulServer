@@ -89,3 +89,32 @@ func TodoCreate(w http.ResponseWriter, r * http.Request, ps httprouter.Params) {
 	}
 	return
 }
+
+
+
+// TodoDelete
+
+func TodoDelete(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	idParam := ps.ByName("todoId")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(500)
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	if err := RepoDestroyTodo(id); err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusNotFound)
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	w.WriteHeader(204) // 204 No Content
+	return
+}
